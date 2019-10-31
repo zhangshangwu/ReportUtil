@@ -45,7 +45,7 @@ public class Product
 
 and We have a collection of Category.
 
-Firstly, define the ColumnDef array,
+1. Firstly, define the ColumnDef array,
 
 ```
 var columnDefs = new ColumnDefBase[]
