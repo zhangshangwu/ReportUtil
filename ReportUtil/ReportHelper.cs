@@ -105,7 +105,6 @@ namespace ReportUtil
                 WorkbookStylesPart sp = doc.WorkbookPart.WorkbookStylesPart;
                 uint[] styleIndexies = AddCellStyles(columnDefs, sp);
                 AssignData(masters, columnDefs, getDetailFunc, worksheetPart, sheetData, styleIndexies);
-                SetColumnWidth(columnDefs, worksheetPart, sheetData, styleIndexies);
             }
 
             targetStream.Position = 0;
@@ -141,8 +140,7 @@ namespace ReportUtil
                         cellData.StyleIndex = styleIndexies[k];
                     }
                 }
-
-                SetColumnWidth(columnDefs, worksheetPart, sheetData, styleIndexies);
+               
             }
 
             targetStream.Position = 0;
