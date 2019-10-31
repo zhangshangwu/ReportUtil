@@ -1,0 +1,14 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/ReportUtil/v15/Server/sqlite3
+/ReportUtil/.vs/ReportUtil
+/ReportUtil/bin/Debug/netcoreapp2.2
+/ReportUtil/obj
+/ReportUtil.Tests.Integration/bin/Debug/netcoreapp2.2
+/ReportUtil.Tests.Integration/obj
+/ReportUtil/bin/Release/netcoreapp2.2
+/ReportUtil.Tests.Integration/bin/Release/netcoreapp2.2
+/.vs/ReportUtil/v15
+/.vs/ReportUtil/DesignTimeBuild
