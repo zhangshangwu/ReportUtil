@@ -43,9 +43,7 @@ public class Product
     
 ```
 
-and
-
-We have a collection List<Category>.
+and We have a collection of Category.
 
 Firstly, define the ColumnDef array,
 
