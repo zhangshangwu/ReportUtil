@@ -12,3 +12,5 @@
 /ReportUtil.Tests.Integration/bin/Release/netcoreapp2.2
 /.vs/ReportUtil/v15
 /.vs/ReportUtil/DesignTimeBuild
+/ReportUtil/ReportUtil.csproj.user
+/ReportUtil/Properties/PublishProfiles
