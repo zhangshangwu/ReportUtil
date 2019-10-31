@@ -45,7 +45,7 @@ public class Product
 
 and We have a collection of Category.
 
-1. Firstly, define the ColumnDef array,
+2.1 Firstly, define the ColumnDef array,
 
 ```
 var columnDefs = new ColumnDefBase[]
@@ -80,16 +80,17 @@ var columnDefs = new ColumnDefBase[]
                             
 ```
 
-2.1 If we have already a template xlsx file to define the captain rows and read it into stream, call the function like following,
+2.2 If we have already a template xlsx file to define the captain rows and read it into stream, call the function like following,
 
 ```
 new ReportHelper().GenerateReportWithTemplate<Category, Product>(stream,data, columnDefs, (o) => o.Products);
 ```
-2.2 If there's no template file, just call another function ,
+2.3 If there's no template file, just call another function ,
 
 ```
 var stream = new ReportHelper().GenerateReport<Category, Product>(data, columnDefs, (o) => o.Products);
 ```
-3. Save the stream to file or a http response output stream, you will get an excel report file.
+
+2.4 Save the stream to file or a http response output stream, you will get an excel report file.
 
 Enjoy it!
