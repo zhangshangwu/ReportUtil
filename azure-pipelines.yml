@@ -26,6 +26,7 @@ steps:
 - task: NuGetCommand@2
   inputs:
     command: pack
+    packagesToPack: './ReportUtil/*.csproj'
     versioningScheme: byPrereleaseNumber
     majorVersion: '$(Major)'
     minorVersion: '$(Minor)'
