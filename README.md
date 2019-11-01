@@ -1,6 +1,6 @@
 # ReportUtil
 
-[![Downloads](https://img.shields.io/nuget/dt/DocumentFormat.OpenXml.svg)](https://www.nuget.org/packages/ReportUtil)
+[![Downloads](https://img.shields.io/nuget/dt/ReportUtil.svg)](https://www.nuget.org/packages/ReportUtil)
 [![Build Status](https://dev.azure.com/zhangshangwu0605/zhangshangwu/_apis/build/status/zhangshangwu.ReportUtil?branchName=master)](https://dev.azure.com/zhangshangwu0605/zhangshangwu/_build/latest?definitionId=1&branchName=master)
 
 A  .net core utility library to export generic lists to excel file using [Open Xml SDK](https://github.com/OfficeDev/Open-XML-SDK). The collections could be master-detail style, and the cells for master fields could be merged. 
