@@ -3,6 +3,7 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
+name: 1.0.3.$(rev:.r)
 trigger:
 - master
 
@@ -11,9 +12,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  Major: '1'
-  Minor: '0'
-  Patch: '3'
+ 
 
 steps:
 - script: dotnet build ./ReportUtil --configuration $(buildConfiguration)
@@ -28,15 +27,11 @@ steps:
     command: pack
     packagesToPack: './ReportUtil/*.csproj'
     versioningScheme: byBuildNumber
-    majorVersion: '$(Major)'
-    minorVersion: '$(Minor)'
-    patchVersion: '$(Patch)'
+   
 - task: NuGetCommand@2
   inputs:
     command: push
     nuGetFeedType: external
     publishFeedCredentials: 'NugetGallary'
     versioningScheme: byBuildNumber
-    majorVersion: '$(Major)'
-    minorVersion: '$(Minor)'
-    patchVersion: '$(Patch)'
+  
