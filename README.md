@@ -4,10 +4,11 @@ A  .net core utility library to export generic lists to excel file using [Open X
 
 Nuget package is available [here](https://www.nuget.org/packages/ReportUtil/).
 
-Here is the snapshot.
+The result snapshot looks like as following.
 
-<img src="https://github.com/zhangshangwu/ReportUtil/blob/master/Snapshot.PNG" width="500">
 
+
+![](https://github.com/zhangshangwu/ReportUtil/blob/master/Snapshot.PNG?s=300)
 
 ## How to use
 
