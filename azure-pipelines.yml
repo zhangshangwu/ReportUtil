@@ -11,6 +11,9 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  Major: '1'
+  Minor: '0'
+  Patch: '0'
 
 steps:
 - script: dotnet build ./ReportUtil --configuration $(buildConfiguration)
@@ -20,3 +23,10 @@ steps:
     command: test
     projects: './ReportUtil.Tests.Integration/ReportUtil.Tests.Integration.csproj'
     arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+- task: NuGetCommand@2
+  inputs:
+    command: pack
+    versioningScheme: byPrereleaseNumber
+    majorVersion: '$(Major)'
+    minorVersion: '$(Minor)'
+    patchVersion: '$(Patch)'
