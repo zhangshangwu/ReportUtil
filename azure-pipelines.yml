@@ -23,7 +23,7 @@ steps:
     command: test
     projects: './ReportUtil.Tests.Integration/ReportUtil.Tests.Integration.csproj'
     arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
-- task: NuGetCommand@2
+- task: DotNetCoreCLI@2
   inputs:
     command: pack
     packagesToPack: './ReportUtil/*.csproj'
