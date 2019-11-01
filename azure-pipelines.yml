@@ -13,7 +13,7 @@ variables:
   buildConfiguration: 'Release'
   Major: '1'
   Minor: '0'
-  Patch: '0'
+  Patch: '3'
 
 steps:
 - script: dotnet build ./ReportUtil --configuration $(buildConfiguration)
@@ -27,7 +27,7 @@ steps:
   inputs:
     command: pack
     packagesToPack: './ReportUtil/*.csproj'
-    versioningScheme: byPrereleaseNumber
+    versioningScheme: byBuildNumber
     majorVersion: '$(Major)'
     minorVersion: '$(Minor)'
     patchVersion: '$(Patch)'
@@ -36,7 +36,7 @@ steps:
     command: push
     nuGetFeedType: external
     publishFeedCredentials: 'NugetGallary'
-    versioningScheme: byPrereleaseNumber
+    versioningScheme: byBuildNumber
     majorVersion: '$(Major)'
     minorVersion: '$(Minor)'
     patchVersion: '$(Patch)'
