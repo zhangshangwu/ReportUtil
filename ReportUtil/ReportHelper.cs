@@ -43,53 +43,50 @@ namespace ReportUtil
         {
             var stream = new MemoryStream();
 
-            SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook);
-
-            WorkbookPart workbookpart = spreadsheetDocument.AddWorkbookPart();
-            workbookpart.Workbook = new Workbook();
-
-            // Add a WorksheetPart to the WorkbookPart.
-            WorksheetPart worksheetPart = workbookpart.AddNewPart<WorksheetPart>();
-
-            SheetData sheetData = new SheetData();
-
-            worksheetPart.Worksheet = new Worksheet(sheetData);
-
-            WorkbookStylesPart sp = workbookpart.AddNewPart<WorkbookStylesPart>("rId3");
-            uint[] styleIndexies = AddCellStyles(columnDefs, sp);
-
-            #region captain 
-            Row captainRow = new Row();
-            captainRow.RowIndex = (UInt32)1;
-            int captainSyleIndex = AddCaptainFormat(sp.Stylesheet);
-            for (int i = 0; i < columnDefs.Length; i++)
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook))
             {
+                WorkbookPart workbookpart = spreadsheetDocument.AddWorkbookPart();
+                workbookpart.Workbook = new Workbook();
+                // Add a WorksheetPart to the WorkbookPart.
+                WorksheetPart worksheetPart = workbookpart.AddNewPart<WorksheetPart>();
+                SheetData sheetData = new SheetData();
+                worksheetPart.Worksheet = new Worksheet(sheetData);
 
-                Cell cellCaptain = new Cell();
+                WorkbookStylesPart sp = workbookpart.AddNewPart<WorkbookStylesPart>("rId3");
+                uint[] styleIndexies = AddCellStyles(columnDefs, sp);
 
-                cellCaptain.CellReference = $"{(char)((int)'A' + i)}{captainRow.RowIndex}";
-                cellCaptain.CellValue = new CellValue(columnDefs[i].Captain);
-                cellCaptain.DataType = new EnumValue<CellValues>(CellValues.String);
-                cellCaptain.StyleIndex = (uint)captainSyleIndex;
-                captainRow.AppendChild(cellCaptain);
+                #region captain 
+                Row captainRow = new Row();
+                captainRow.RowIndex = (UInt32)1;
+                int captainSyleIndex = AddCaptainFormat(sp.Stylesheet);
+                for (int i = 0; i < columnDefs.Length; i++)
+                {
+
+                    Cell cellCaptain = new Cell();
+
+                    cellCaptain.CellReference = $"{(char)((int)'A' + i)}{captainRow.RowIndex}";
+                    cellCaptain.CellValue = new CellValue(columnDefs[i].Captain);
+                    cellCaptain.DataType = new EnumValue<CellValues>(CellValues.String);
+                    cellCaptain.StyleIndex = (uint)captainSyleIndex;
+                    captainRow.AppendChild(cellCaptain);
+                }
+
+                sheetData.AppendChild(captainRow);
+                #endregion
+
+                AssignData(masters, columnDefs, getDetailFunc, worksheetPart, sheetData, styleIndexies);
+
+                SetColumnWidth(columnDefs, worksheetPart, sheetData, styleIndexies);
+
+                Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
+                sheets.AppendChild(new Sheet()
+                {
+                    Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(spreadsheetDocument.WorkbookPart.WorksheetParts.First()),
+                    SheetId = 1,
+                    Name = "Sheet1"
+                });
+
             }
-
-            sheetData.AppendChild(captainRow);
-            #endregion
-
-            AssignData(masters, columnDefs, getDetailFunc, worksheetPart, sheetData, styleIndexies);
-
-            SetColumnWidth(columnDefs, worksheetPart, sheetData, styleIndexies);
-
-            Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
-            sheets.AppendChild(new Sheet()
-            {
-                Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(spreadsheetDocument.WorkbookPart.WorksheetParts.First()),
-                SheetId = 1,
-                Name = "Sheet1"
-            });
-
-            spreadsheetDocument.Close();
             stream.Position = 0;
             return stream;
         }

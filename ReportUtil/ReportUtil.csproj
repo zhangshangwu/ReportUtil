@@ -4,7 +4,10 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Authors>Shewood</Authors>
     <RepositoryUrl>https://github.com/zhangshangwu/ReportUtil</RepositoryUrl>
-    <Version>1.0.1</Version>
+    <Version>1.0.3</Version>
+    <Description>A .net core utility library to export generic lists to excel file using Open Xml SDK. The collections could be master-detail style, and the cells for master fields could be merged</Description>
+    <PackageTags>OpenXML SDK Excel Master-Details Mergecell Generic</PackageTags>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
