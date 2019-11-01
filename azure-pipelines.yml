@@ -3,7 +3,7 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-name: 1.0.3.$(rev:.r)
+name: 1.0$(rev:.r)
 trigger:
 - master
 
