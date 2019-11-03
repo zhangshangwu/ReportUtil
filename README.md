@@ -19,7 +19,7 @@ The result snapshot looks like as following.
 1. Install the library from Nuget
 
 ```
-> Install-Package ReportUtil -Version 1.0.1
+> Install-Package ReportUtil
 ```
 2. Suppose we have following model
 
