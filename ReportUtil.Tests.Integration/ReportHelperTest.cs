@@ -43,8 +43,26 @@ namespace ReportUtil.Tests.Integration
         public void GenerateReportWithTemplate_Test()
         {
             var columnDefs = CreateMasterDetailDataColumns().Where(c => c is ColumnDef<Order>).Cast<ColumnDef<Order>>().ToArray();
+            List<Order> orders = GetOrdersData();
 
-            List<Order> orders = new List<Order>()
+            using (MemoryStream targetStream = new MemoryStream())
+            {
+                var fs = File.OpenRead(Path.Combine(Directory.GetCurrentDirectory(), "ReportTemplate", "Test_Order_Template.xlsx"));
+                fs.CopyTo(targetStream);
+                fs.Close();
+                targetStream.Position = 0;
+
+                var stream = new ReportHelper().GenerateReportWithTemplate<Order>(targetStream, orders, columnDefs);
+
+                ValidateSpreadsheetDoc(stream);
+
+                DumpToFile(stream, @"target1.xlsx");
+            }
+        }
+
+        private static List<Order> GetOrdersData()
+        {
+            return new List<Order>()
             {
                 new Order()
                 {
@@ -65,20 +83,6 @@ namespace ReportUtil.Tests.Integration
                     PlaceOrderTime = DateTime.Now.AddDays(-1)
                 }
             };
-
-            using (MemoryStream targetStream = new MemoryStream())
-            {
-                var fs = File.OpenRead(Path.Combine(Directory.GetCurrentDirectory(), "ReportTemplate", "Test_Order_Template.xlsx"));
-                fs.CopyTo(targetStream);
-                fs.Close();
-                targetStream.Position = 0;
-
-                var stream = new ReportHelper().GenerateReportWithTemplate<Order>(targetStream, orders, columnDefs);
-
-                ValidateSpreadsheetDoc(stream);
-
-                DumpToFile(stream, @"target1.xlsx");
-            }
         }
 
         [TestMethod]
@@ -111,6 +115,18 @@ namespace ReportUtil.Tests.Integration
             var stream = new ReportHelper().GenerateReport<Order, OrderDetail>(orders, columns, (o) => o.Details);
             ValidateSpreadsheetDoc(stream);
             DumpToFile(stream, @"target3.xlsx");
+
+        }
+
+        [TestMethod]
+        public void GenerateReport_Test()
+        {
+            var columnDefs = CreateMasterDetailDataColumns().Where(c => c is ColumnDef<Order>).Cast<ColumnDef<Order>>().ToArray();
+            List<Order> orders = GetOrdersData();
+
+            var stream = new ReportHelper().GenerateReport<Order>(orders, columnDefs);
+            ValidateSpreadsheetDoc(stream);
+            DumpToFile(stream, @"target4.xlsx");
 
         }
 

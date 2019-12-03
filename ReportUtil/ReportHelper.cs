@@ -38,7 +38,72 @@ namespace ReportUtil
 
     public class ReportHelper : IReportHelper
     {
+        public Stream GenerateReport<T>(IList<T> records, ColumnDef<T>[] columnDefs)
+        {
+            var stream = new MemoryStream();
 
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook))
+            {
+                WorkbookPart workbookpart = spreadsheetDocument.AddWorkbookPart();
+                workbookpart.Workbook = new Workbook();
+                // Add a WorksheetPart to the WorkbookPart.
+                WorksheetPart worksheetPart = workbookpart.AddNewPart<WorksheetPart>();
+                SheetData sheetData = new SheetData();
+                worksheetPart.Worksheet = new Worksheet(sheetData);
+
+                WorkbookStylesPart sp = workbookpart.AddNewPart<WorkbookStylesPart>("rId3");
+                uint[] styleIndexies = AddCellStyles(columnDefs, sp);
+
+                #region captain 
+                Row captainRow = new Row();
+                captainRow.RowIndex = (UInt32)1;
+                int captainSyleIndex = AddCaptainFormat(sp.Stylesheet);
+                for (int i = 0; i < columnDefs.Length; i++)
+                {
+
+                    Cell cellCaptain = new Cell();
+
+                    cellCaptain.CellReference = $"{(char)((int)'A' + i)}{captainRow.RowIndex}";
+                    cellCaptain.CellValue = new CellValue(columnDefs[i].Captain);
+                    cellCaptain.DataType = new EnumValue<CellValues>(CellValues.String);
+                    cellCaptain.StyleIndex = (uint)captainSyleIndex;
+                    captainRow.AppendChild(cellCaptain);
+                }
+
+                sheetData.AppendChild(captainRow);
+                uint rowIndex = captainRow.RowIndex;
+                #endregion
+                foreach (var record in records)
+                {
+                    var dataRow = new Row();
+                    dataRow.RowIndex = (uint)++rowIndex;
+                    sheetData.Append(dataRow);
+
+                    for (int k = 0; k < columnDefs.Length; k++)
+                    {
+                        Cell cellData = new Cell();
+                        cellData.CellReference = $"{(char)((int)'A' + k)}{dataRow.RowIndex}";
+                        cellData.DataType = columnDefs[k].TargetDataType;
+                        dataRow.Append(cellData);
+                        cellData.CellValue = columnDefs[k].GetValueFunc(record);
+                        cellData.StyleIndex = styleIndexies[k];
+                    }
+                }
+
+                SetColumnWidth(columnDefs, worksheetPart, sheetData, styleIndexies);
+
+                Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
+                sheets.AppendChild(new Sheet()
+                {
+                    Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(spreadsheetDocument.WorkbookPart.WorksheetParts.First()),
+                    SheetId = 1,
+                    Name = "Sheet1"
+                });
+            }
+
+            stream.Position = 0;
+            return stream;
+        }
         public Stream GenerateReport<TMaster, TDetail>(IList<TMaster> masters, ColumnDefBase[] columnDefs, Func<TMaster, IList<TDetail>> getDetailFunc)
         {
             var stream = new MemoryStream();
@@ -137,7 +202,7 @@ namespace ReportUtil
                         cellData.StyleIndex = styleIndexies[k];
                     }
                 }
-               
+
             }
 
             targetStream.Position = 0;
