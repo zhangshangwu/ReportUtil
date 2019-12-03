@@ -211,8 +211,8 @@ namespace ReportUtil
 
         private static void SetColumnWidth(ColumnDefBase[] columnDefs, WorksheetPart worksheetPart, SheetData sheetData, uint[] styleIndexies)
         {
-            var col = columnDefs.First(c => c.TargetDataType.Value == CellValues.Number);
-
+            var col = columnDefs.FirstOrDefault(c => c.TargetDataType.Value == CellValues.Number);
+            if (col == null) return;
             int numberColumnIndex = Array.IndexOf<ColumnDefBase>(columnDefs, col);
             uint numberStyleIndex = styleIndexies[numberColumnIndex];
             Columns excelColumns = AutoSize(sheetData, numberStyleIndex);
