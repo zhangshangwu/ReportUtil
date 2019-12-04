@@ -60,6 +60,7 @@ namespace ReportUtil.Tests.Integration
             }
         }
 
+       
         private static List<Order> GetOrdersData()
         {
             return new List<Order>()
@@ -127,6 +128,21 @@ namespace ReportUtil.Tests.Integration
             var stream = new ReportHelper().GenerateReport<Order>(orders, columnDefs);
             ValidateSpreadsheetDoc(stream);
             DumpToFile(stream, @"target4.xlsx");
+
+        }
+
+        [TestMethod]
+        public void GenerateMultipSheetReport_Test()
+        {
+            var columnDefs = CreateMasterDetailDataColumns().Where(c => c is ColumnDef<Order>).Cast<ColumnDef<Order>>().ToArray();
+            List<Order> orders = GetOrdersData();
+            var reportHelper = new ReportHelper();
+            var stream = reportHelper.GenerateReport(orders, columnDefs);
+           
+            reportHelper.GenerateReportWithTemplate(stream, orders, columnDefs, "Sheet2");
+            ValidateSpreadsheetDoc(stream);
+
+            DumpToFile(stream, @"target5.xlsx");
 
         }
 

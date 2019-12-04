@@ -53,11 +53,12 @@ namespace ReportUtil
 
                 WorkbookStylesPart sp = workbookpart.AddNewPart<WorkbookStylesPart>("rId3");
                 uint[] styleIndexies = AddCellStyles(columnDefs, sp);
+                CellFormat cellFormat = sp.Stylesheet.CellFormats.ChildElements[(int)styleIndexies[0]] as CellFormat;
 
                 #region captain 
                 Row captainRow = new Row();
                 captainRow.RowIndex = (UInt32)1;
-                int captainSyleIndex = AddCaptainFormat(sp.Stylesheet);
+                int captainSyleIndex = AddCaptainFormat(sp.Stylesheet,cellFormat.BorderId);
                 for (int i = 0; i < columnDefs.Length; i++)
                 {
 
@@ -92,13 +93,7 @@ namespace ReportUtil
 
                 SetColumnWidth(columnDefs, worksheetPart, sheetData, styleIndexies);
 
-                Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
-                sheets.AppendChild(new Sheet()
-                {
-                    Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(spreadsheetDocument.WorkbookPart.WorksheetParts.First()),
-                    SheetId = 1,
-                    Name = "Sheet1"
-                });
+                AppendNewSheet(spreadsheetDocument);
             }
 
             stream.Position = 0;
@@ -119,11 +114,12 @@ namespace ReportUtil
 
                 WorkbookStylesPart sp = workbookpart.AddNewPart<WorkbookStylesPart>("rId3");
                 uint[] styleIndexies = AddCellStyles(columnDefs, sp);
-
+                CellFormat cellFormat = sp.Stylesheet.CellFormats.ChildElements[(int)styleIndexies[0]] as CellFormat;
+                
                 #region captain 
                 Row captainRow = new Row();
                 captainRow.RowIndex = (UInt32)1;
-                int captainSyleIndex = AddCaptainFormat(sp.Stylesheet);
+                int captainSyleIndex = AddCaptainFormat(sp.Stylesheet, cellFormat.BorderId);
                 for (int i = 0; i < columnDefs.Length; i++)
                 {
 
@@ -143,24 +139,24 @@ namespace ReportUtil
 
                 SetColumnWidth(columnDefs, worksheetPart, sheetData, styleIndexies);
 
-                Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
-                sheets.AppendChild(new Sheet()
-                {
-                    Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(spreadsheetDocument.WorkbookPart.WorksheetParts.First()),
-                    SheetId = 1,
-                    Name = "Sheet1"
-                });
+                AppendNewSheet(spreadsheetDocument);
 
             }
             stream.Position = 0;
             return stream;
         }
 
+      
+
         public Stream GenerateReportWithTemplate<TMaster, TDetail>(Stream targetStream, IList<TMaster> masters, ColumnDefBase[] columnDefs, Func<TMaster, IList<TDetail>> getDetailFunc, string sheetName = "Sheet1", int beginRowIndex = 2)
         {
             using (SpreadsheetDocument doc = SpreadsheetDocument.Open(targetStream, true))
             {
                 WorksheetPart worksheetPart = GetWorksheetPartByName(doc, sheetName);
+                if(worksheetPart == null)
+                {
+                    worksheetPart = AppendNewSheet(doc,sheetName);
+                }
                 Worksheet worksheet = worksheetPart.Worksheet;
                 var sheetData = worksheet.GetFirstChild<SheetData>();
 
@@ -173,11 +169,44 @@ namespace ReportUtil
             return targetStream;
         }
 
+        private static WorksheetPart AppendNewSheet(SpreadsheetDocument doc,string sheetName = null)
+        {
+            WorksheetPart worksheetPart = doc.WorkbookPart.WorksheetParts.First();
+            Sheets sheets = doc.WorkbookPart.Workbook.GetFirstChild<Sheets>();
+            if (sheets == null)
+            {
+                sheets = doc.WorkbookPart.Workbook.AppendChild(new Sheets());
+            }
+            uint sheetId = 1;
+            if (sheets.Elements<Sheet>().Count() > 0)
+            {
+                sheetId =
+                    sheets.Elements<Sheet>().Select(s => s.SheetId.Value).Max() + 1;
+            }
+
+            if (string.IsNullOrEmpty(sheetName))
+            {
+                sheetName = $"Sheet{sheetId}";
+            }
+
+            sheets.AppendChild(new Sheet()
+            {
+                Id = doc.WorkbookPart.GetIdOfPart(worksheetPart),
+                SheetId = sheetId,
+                Name = sheetName
+            });
+            return worksheetPart;
+        }
+
         public Stream GenerateReportWithTemplate<T>(Stream targetStream, IList<T> records, ColumnDef<T>[] columnDefs, string sheetName = "Sheet1", int beginRowIndex = 2)
         {
-            using (SpreadsheetDocument doc = SpreadsheetDocument.Open(targetStream, true))
+            using (SpreadsheetDocument doc = SpreadsheetDocument.Open(targetStream,true))
             {
                 WorksheetPart worksheetPart = GetWorksheetPartByName(doc, sheetName);
+                if (worksheetPart == null)
+                {
+                    worksheetPart = AppendNewSheet(doc, sheetName);
+                }
                 Worksheet worksheet = worksheetPart.Worksheet;
                 var sheetData = worksheet.GetFirstChild<SheetData>();
 
@@ -269,7 +298,7 @@ namespace ReportUtil
 
         }
 
-        private static int AddCaptainFormat(Stylesheet stylesheet)
+        private static int AddCaptainFormat(Stylesheet stylesheet,uint borderId)
         {
             Fill fill = new Fill();
 
@@ -298,7 +327,7 @@ namespace ReportUtil
             var cellFormat = new CellFormat();
             cellFormat.FontId = fontId;
             cellFormat.FillId = fillId;
-            cellFormat.BorderId = 0;
+            cellFormat.BorderId = borderId;
             cellFormat.FormatId = 0;
             cellFormat.ApplyNumberFormat = BooleanValue.FromBoolean(true);
             cellFormat.ApplyFont = true;
