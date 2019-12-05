@@ -135,11 +135,16 @@ namespace ReportUtil.Tests.Integration
         public void GenerateMultipSheetReport_Test()
         {
             var columnDefs = CreateMasterDetailDataColumns().Where(c => c is ColumnDef<Order>).Cast<ColumnDef<Order>>().ToArray();
-            List<Order> orders = GetOrdersData();
-            var reportHelper = new ReportHelper();
-            var stream = reportHelper.GenerateReport(orders, columnDefs);
-           
-            reportHelper.GenerateReportWithTemplate(stream, orders, columnDefs, "Sheet2");
+            List<Order> orders = CreateOrdersWithDetails();
+
+            var columnDetialDefs = CreateMasterDetailDataColumns().Where(c => c is ColumnDef<OrderDetail>).Cast<ColumnDef<OrderDetail>>().ToArray();
+            var details = orders[0].Details;
+
+            ReportBuilder builder = new ReportBuilder();
+
+            Stream stream = builder.AddSheet(orders, columnDefs)
+                   .AddSheet(details, columnDetialDefs)
+                   .Build();
             ValidateSpreadsheetDoc(stream);
 
             DumpToFile(stream, @"target5.xlsx");
